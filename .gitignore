@@ -1,4 +1,9 @@
+# Environment variables
+
 .env
+
+
+# Packages
 
 node_modules/
 yarn.lock
