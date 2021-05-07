@@ -1,0 +1,1 @@
+exports.createTimestamp = () => new Date();
