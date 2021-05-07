@@ -21,6 +21,13 @@ const Task = sequelize.define("task", {
     type: Sequelize.TEXT,
     allowNull: true,
   },
+  dueDate: {
+    type: Sequelize.DATE,
+    allowNull: false,
+  },
+  isArchived: {
+    type: Sequelize.BOOLEAN,
+  },
 });
 
 module.exports = Task;

@@ -1,5 +1,5 @@
 const { ROUTE_NOT_FOUND } = require("../consts/serverErrors");
-const { StatusCodes } = require("../utils/codes");
+const { StatusCodes } = require("../consts/codes");
 const { NotFoundError } = require("../utils/errors");
 
 exports.get404 = (req, res) => {

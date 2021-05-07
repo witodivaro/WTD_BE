@@ -1,4 +1,4 @@
-const { StatusCodes } = require("./codes");
+const { StatusCodes } = require("../consts/codes");
 const { createTimestamp } = require("./utils");
 
 class Error {
