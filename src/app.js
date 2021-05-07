@@ -12,7 +12,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:3001",
+    origin: "http://localhost:3000",
   })
 );
 
@@ -25,14 +25,4 @@ app.use(pageNotFoundController.get404);
 
 app.listen(3002);
 
-sequelize.sync().then(() => {
-  Task.findByPk(1).then((task) => {
-    if (!task) {
-      Task.create({
-        type: "homo",
-        text: "lorem testum",
-        color: "#000",
-      });
-    }
-  });
-});
+sequelize.sync();
