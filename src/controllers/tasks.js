@@ -1,4 +1,7 @@
 const Task = require("../models/task");
+const { TASK_DOESNT_EXIST } = require("../consts/taskErrors");
+const { NotFoundError, InternalServerError } = require("../utils/errors");
+const { StatusCodes } = require("../utils/codes");
 
 exports.getTasks = async (req, res, next) => {
   const tasks = await Task.findAll({
@@ -8,12 +11,11 @@ exports.getTasks = async (req, res, next) => {
     },
   });
 
-  res.status(200).send(tasks);
+  res.status(StatusCodes.OK).send(tasks);
 };
 
 exports.postTask = async (req, res, next) => {
   const { type, text, color } = req.body;
-  console.log(req.body);
 
   try {
     const dbResponse = await Task.create({
@@ -22,12 +24,12 @@ exports.postTask = async (req, res, next) => {
       color,
     });
 
-    res.status(200).send(dbResponse);
+    res.status(StatusCodes.CREATED).send(dbResponse);
   } catch (error) {
-    res.status(400).send(error);
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .send(new InternalServerError(error.message));
   }
-
-  res.status(200).send("Post task");
 };
 
 exports.patchTask = async (req, res, next) => {
@@ -44,15 +46,34 @@ exports.patchTask = async (req, res, next) => {
     const { createdAt } = await task.save();
 
     res
-      .status(200)
+      .status(StatusCodes.OK)
       .send({ id: parseInt(id, 10), type, text, color, createdAt });
   } catch (error) {
-    res.status(400).send(error);
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .send(new InternalServerError(error.message));
   }
-
-  res.status(200).send("Patch task");
 };
 
-exports.deleteTask = (req, res, next) => {
-  res.status(200).send("Delete task");
+exports.deleteTask = async (req, res, next) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res
+      .status(StatusCodes.NOT_FOUND)
+      .send(new NotFoundError(TASK_DOESNT_EXIST));
+  }
+
+  try {
+    const taskToDelete = await Task.findByPk(id);
+
+    if (!taskToDelete) {
+      return res.status().send(new NotFoundError(TASK_DOESNT_EXIST));
+    }
+
+    await taskToDelete.destroy();
+    res.status(200).send({ success: true });
+  } catch (error) {
+    res.status(500).send(new InternalServerError(error.message));
+  }
 };
