@@ -28,6 +28,9 @@ const Task = sequelize.define("task", {
   isArchived: {
     type: Sequelize.BOOLEAN,
   },
+  archivedAt: {
+    type: Sequelize.DATE,
+  },
 });
 
 module.exports = Task;

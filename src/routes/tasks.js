@@ -8,9 +8,9 @@ router.get("/tasks", tasksController.getTasks);
 
 router.post("/tasks", tasksController.postTask);
 
-router.post("/tasks/archive", tasksController.archiveTask);
-
 router.patch("/tasks/:id", tasksController.patchTask);
+
+router.patch("/tasks/archived/:id", tasksController.changeTaskArchived);
 
 router.delete("/tasks/:id", tasksController.deleteTask);
 
