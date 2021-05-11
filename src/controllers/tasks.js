@@ -1,9 +1,27 @@
+const { Op } = require("sequelize");
+
 const Task = require("../models/task");
 const { TASK_DOESNT_EXIST } = require("../consts/taskErrors");
 const { NotFoundError, InternalServerError } = require("../utils/errors");
 const { StatusCodes } = require("../consts/codes");
 
+const MILISECONDS_IN_ONE_DAY = 24 * 60 * 60 * 1000;
+
 exports.getTasks = async (req, res, next) => {
+  const ONE_DAY_AGO = Date.now() - MILISECONDS_IN_ONE_DAY * 1;
+
+  const tasksToDelete = await Task.findAll({
+    where: {
+      archivedAt: {
+        [Op.lt]: ONE_DAY_AGO,
+      },
+    },
+  });
+
+  tasksToDelete.forEach(async (task) => {
+    await task.destroy();
+  });
+
   const tasks = await Task.findAll({
     order: [["createdAt", "DESC"]],
     attributes: {
