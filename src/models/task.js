@@ -30,6 +30,7 @@ const Task = sequelize.define("task", {
   },
   archivedAt: {
     type: Sequelize.DATE,
+    allowNull: true,
   },
 });
 
