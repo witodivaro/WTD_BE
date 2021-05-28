@@ -5,8 +5,9 @@ const router = express.Router();
 const TaskRepository = require("./task.repository");
 const TaskService = require("./task.service");
 const TaskController = require("./task.controller");
+const Task = require("./task.model");
 
-const taskRepository = new TaskRepository();
+const taskRepository = new TaskRepository(Task);
 const taskService = new TaskService(taskRepository);
 const taskController = new TaskController(taskService);
 

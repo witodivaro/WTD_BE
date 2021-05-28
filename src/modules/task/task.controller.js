@@ -35,16 +35,9 @@ class TaskController {
 
   updateTask = async (req, res, next) => {
     const { id } = req.params;
-    const { type, text, color, dueDate, isArchived } = req.body;
 
     try {
-      const updatedTask = await this.taskService.updateTask(id, {
-        type,
-        text,
-        color,
-        dueDate,
-        isArchived,
-      });
+      const updatedTask = await this.taskService.updateTask(id, req.body);
 
       res.status(200).json(updatedTask);
     } catch (error) {

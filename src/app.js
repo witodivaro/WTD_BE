@@ -4,10 +4,11 @@ const bodyParser = require("body-parser");
 
 const sequelize = require("./db/index");
 const tasksRoutes = require("./modules/task/task.router");
+const userRoutes = require("./modules/user/user.router");
 const pageNotFoundController = require("./controllers/404");
 
 const Task = require("./modules/task/task.model");
-const User = require("./models/user");
+const User = require("./modules/user/user.model");
 
 Task.belongsTo(User);
 User.hasMany(Task);
@@ -24,7 +25,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(tasksRoutes);
-
+app.use(userRoutes);
 app.use(pageNotFoundController.get404);
 
 app.listen(3002);
