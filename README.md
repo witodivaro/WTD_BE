@@ -6,12 +6,11 @@
 * DB: PostgreSQL
 
 ## Sequelize Documentation
-* [go to sequelize Docs](http://docs.sequelizejs.com/manual/getting-started.html)
-* [go to sequelize typescript Docs](https://github.com/RobinBuschmann/sequelize-typescript#readme)
+* [Sequelize docs](http://docs.sequelizejs.com/manual/getting-started.html)
 
 ## Express.js Documentation
 
-* [go to Express.js Docs](https://expressjs.com/)
+* [Express.js docs](https://expressjs.com/)
 
 ## Installation
 
