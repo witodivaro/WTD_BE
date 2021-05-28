@@ -1,0 +1,38 @@
+### Wito's To-Dos Backend
+
+## Stack technologies
+
+* JavaScript, Node.js, express.js, Sequelize
+* DB: PostgreSQL
+
+## Sequelize Documentation
+* [go to sequelize Docs](http://docs.sequelizejs.com/manual/getting-started.html)
+* [go to sequelize typescript Docs](https://github.com/RobinBuschmann/sequelize-typescript#readme)
+
+## Express.js Documentation
+
+* [go to Express.js Docs](https://expressjs.com/)
+
+## Installation
+
+1. clone repository
+2. make sure you have nodejs installed (version 10 or higher)
+
+3. install node modules packages (npm version 6.4 or higher)
+
+    ```bash
+    $ yarn install
+    ```
+
+4. install database PostgreSQL (version 11 or higher)
+
+    * [postgreSQL Linux installation](https://www.digitalocean.com/community/tutorials/postgresql-ubuntu-16-04-ru)
+    * [postgreSQL Mac installation](https://www.codementor.io/engineerapart/getting-started-with-postgresql-on-mac-osx-are8jcopb)  
+    * create database
+    * configure database connection (see `Configs` section)
+
+5. run project in root folder
+
+    ```bash
+    $ npm start
+    ```
