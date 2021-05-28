@@ -1,23 +1,24 @@
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const enforce = require("express-sslify");
 
 const sequelize = require("./db/index");
-const tasksRoutes = require("./routes/tasks");
+const tasksRoutes = require("./modules/task/task.router");
 const pageNotFoundController = require("./controllers/404");
 
-const Task = require("./models/task");
+const Task = require("./modules/task/task.model");
+const User = require("./models/user");
+
+Task.belongsTo(User);
+User.hasMany(Task);
 
 const app = express();
 
 app.use(
   cors({
-    origin: "https://wtd-client.herokuapp.com/",
+    origin: "http://localhost:3001",
   })
 );
-
-app.use(enforce.HTTPS({ trustProtoHeader: true }));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
