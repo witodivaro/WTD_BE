@@ -11,14 +11,14 @@ const taskRepository = new TaskRepository(Task);
 const taskService = new TaskService(taskRepository);
 const taskController = new TaskController(taskService);
 
-router.get("/tasks", taskController.getTasks);
+router.get("/", taskController.getTasks);
 
-router.post("/tasks", taskController.createTask);
+router.post("/", taskController.createTask);
 
-router.patch("/tasks/:id", taskController.updateTask);
+router.patch("/:id", taskController.updateTask);
 
-router.patch("/tasks/archived/:id", taskController.changeTaskArchived);
+router.patch("/archived/:id", taskController.changeTaskArchived);
 
-router.delete("/tasks/:id", taskController.deleteTask);
+router.delete("/:id", taskController.deleteTask);
 
 module.exports = router;

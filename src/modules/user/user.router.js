@@ -11,12 +11,12 @@ const userRepository = new UserRepository(User);
 const userService = new UserService(userRepository);
 const userController = new UserController(userService);
 
-router.get("/user/:id", userController.getUser);
+router.get("/:id", userController.getUser);
 
-router.post("/user", userController.createUser);
+router.post("/", userController.createUser);
 
-router.patch("/user/:id", userController.updateUser);
+router.patch("/:id", userController.updateUser);
 
-router.delete("/user/:id", userController.deleteUser);
+router.delete("/:id", userController.deleteUser);
 
 module.exports = router;

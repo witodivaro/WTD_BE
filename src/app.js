@@ -24,8 +24,8 @@ app.use(
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(tasksRoutes);
-app.use(userRoutes);
+app.use("/tasks", tasksRoutes);
+app.use("/user", userRoutes);
 app.use(pageNotFoundController.get404);
 
 app.listen(3002);
