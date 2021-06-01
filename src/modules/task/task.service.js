@@ -8,6 +8,12 @@ class TaskService {
     this.taskRepository = taskRepository;
   }
 
+  toResponse(task) {
+    const { id, type, text, color, dueDate, isArchived } = task;
+
+    return { id, type, text, color, dueDate, isArchived };
+  }
+
   async destroyExpiredTasks() {
     return await this.taskRepository.destroy({
       archivedAt: {
@@ -16,26 +22,27 @@ class TaskService {
     });
   }
 
-  async getTasks() {
-    const tasks = await this.taskRepository.findAll({
+  async getTasks(user) {
+    const options = {
       order: [["createdAt", "DESC"]],
       attributes: {
         exclude: ["updatedAt"],
       },
-    });
+    };
 
-    return tasks;
+    if (!user) {
+      return await this.taskRepository.findAll(options);
+    }
+
+    return await user.getTasks(options);
   }
 
-  async createTask({ type, text, color, dueDate }) {
-    const dbResponse = await this.taskRepository.create({
-      type,
-      text,
-      color,
-      dueDate,
-    });
+  async createTask(taskDto, user) {
+    if (user) {
+      return await user.createTask(taskDto);
+    }
 
-    return dbResponse;
+    return await this.taskRepository.create(taskDto);
   }
 
   async updateTask(id, updatedTask) {

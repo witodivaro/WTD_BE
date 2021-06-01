@@ -9,9 +9,10 @@ const pageNotFoundController = require("./controllers/404");
 
 const Task = require("./modules/task/task.model");
 const User = require("./modules/user/user.model");
+const { authMiddleware } = require("./middlewares/auth.middleware");
 
 Task.belongsTo(User);
-User.hasMany(Task);
+User.hasMany(Task, { onDelete: "CASCADE" });
 
 const app = express();
 
@@ -20,6 +21,8 @@ app.use(
     origin: "http://localhost:3001",
   })
 );
+
+app.use(authMiddleware);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));

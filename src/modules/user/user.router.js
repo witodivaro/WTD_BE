@@ -11,9 +11,11 @@ const userRepository = new UserRepository(User);
 const userService = new UserService(userRepository);
 const userController = new UserController(userService);
 
-router.get("/:id", userController.getUser);
+router.get("/", userController.getUser);
 
-router.post("/", userController.createUser);
+router.post("/sign-up", userController.signUp);
+
+router.post("/login", userController.login);
 
 router.patch("/:id", userController.updateUser);
 

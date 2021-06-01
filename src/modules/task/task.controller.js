@@ -1,6 +1,11 @@
-const { TASK_DOESNT_EXIST } = require("../../consts/taskErrors");
-const { NotFoundError, InternalServerError } = require("../../utils/errors");
+const {
+  NotFoundError,
+  InternalServerError,
+  UnauthorizedError,
+} = require("../../utils/errors");
 const { StatusCodes } = require("../../consts/codes");
+const { UNAUTHORIZED } = require("../../consts/authErrors");
+const { TASK_DOESNT_EXIST } = require("../../consts/taskErrors");
 
 class TaskController {
   constructor(taskService) {
@@ -8,24 +13,38 @@ class TaskController {
   }
 
   getTasks = async (req, res, next) => {
+    if (!req.user) {
+      return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .json(new UnauthorizedError(UNAUTHORIZED));
+    }
+
     await this.taskService.destroyExpiredTasks();
-    const tasks = await this.taskService.getTasks();
+    const tasks = await this.taskService.getTasks(req.user);
 
     res.status(StatusCodes.OK).json(tasks);
   };
 
   createTask = async (req, res, next) => {
+    if (!req.user) {
+      return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .json(new UnauthorizedError(UNAUTHORIZED));
+    }
+
     const { type, text, color, dueDate } = req.body;
 
-    try {
-      const task = await this.taskService.createTask({
-        type,
-        text,
-        color,
-        dueDate,
-      });
+    const taskDto = {
+      type,
+      text,
+      color,
+      dueDate,
+    };
 
-      res.status(StatusCodes.CREATED).json(task);
+    try {
+      const task = await this.taskService.createTask(taskDto, req.user);
+
+      res.status(StatusCodes.CREATED).json(this.taskService.toResponse(task));
     } catch (error) {
       res
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
@@ -39,7 +58,7 @@ class TaskController {
     try {
       const updatedTask = await this.taskService.updateTask(id, req.body);
 
-      res.status(200).json(updatedTask);
+      res.status(StatusCodes.OK).json(this.taskService.toResponse(updatedTask));
     } catch (error) {
       res
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
@@ -80,7 +99,7 @@ class TaskController {
     try {
       const task = await this.taskService.changeTaskArchived(id, isArchived);
 
-      res.status(StatusCodes.OK).json(task);
+      res.status(StatusCodes.OK).json(this.taskService.toResponse(task));
     } catch (error) {
       res
         .status(StatusCodes.INTERNAL_SERVER_ERROR)

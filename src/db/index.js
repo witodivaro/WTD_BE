@@ -1,15 +1,7 @@
-require("dotenv").config();
-
 const Sequelize = require("sequelize");
 
-const { db_user, db_port, db_name, db_password } = process.env;
+const { DB_CONFIG } = require("../config");
 
-const sequelize = new Sequelize({
-  dialect: "postgres",
-  port: db_port,
-  database: db_name,
-  password: db_password,
-  username: db_user,
-});
+const sequelize = new Sequelize(DB_CONFIG);
 
 module.exports = sequelize;

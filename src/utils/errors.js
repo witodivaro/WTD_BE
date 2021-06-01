@@ -27,8 +27,13 @@ class NotFoundError extends Error {
   status = StatusCodes.NOT_FOUND;
 }
 
+class UnauthorizedError extends Error {
+  status = StatusCodes.UNAUTHORIZED;
+}
+
 module.exports = {
   ValidationError,
   NotFoundError,
   InternalServerError,
+  UnauthorizedError,
 };

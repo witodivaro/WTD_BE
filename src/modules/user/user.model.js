@@ -12,12 +12,18 @@ const User = sequelize.define("user", {
   email: {
     type: Sequelize.TEXT,
     allowNull: false,
+    unique: true,
   },
   username: {
     type: Sequelize.TEXT,
     allowNull: false,
+    unique: true,
   },
   password: {
+    type: Sequelize.TEXT,
+    allowNull: false,
+  },
+  role: {
     type: Sequelize.TEXT,
     allowNull: true,
   },

@@ -3,17 +3,25 @@ class BaseRepository {
     this.model = model;
   }
 
-  async destroy(where) {
+  destroy = async (where) => {
     return await this.model.destroy({ where });
-  }
+  };
 
-  async findAll(options) {
+  findAll = async (options) => {
     return await this.model.findAll(options);
-  }
+  };
 
-  async create(instance) {
+  findOne = async (options) => {
+    return await this.model.findOne(options);
+  };
+
+  findById = async (id) => {
+    return await this.model.findByPk(id);
+  };
+
+  create = async (instance) => {
     return await this.model.create(instance);
-  }
+  };
 
   update = async (id, patch) => {
     const instance = await this.model.findByPk(id);
