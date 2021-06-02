@@ -4,9 +4,9 @@
 
 - JavaScript, Node.js, express.js, Sequelize
 - DB: PostgreSQL
-- Auth: jsonwebtoken (JWT), bcrypt
+- Auth: jsonwebtoken (JWT)
 - Config: dotenv
-- Security: CORS
+- Security: CORS, bcrypt
 
 ## Sequelize Documentation
 

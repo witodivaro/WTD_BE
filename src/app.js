@@ -1,3 +1,5 @@
+require("./utils/encryption");
+
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -18,7 +20,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:3001",
+    origin: "http://localhost:3000",
   })
 );
 
