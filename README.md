@@ -4,6 +4,9 @@
 
 * JavaScript, Node.js, express.js, Sequelize
 * DB: PostgreSQL
+* Auth: jsonwebtoken (JWT)
+* Config: dotenv
+* Security: CORS
 
 ## Sequelize Documentation
 * [Sequelize docs](http://docs.sequelizejs.com/manual/getting-started.html)
