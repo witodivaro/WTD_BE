@@ -1,6 +1,7 @@
 const { UNAUTHORIZED, USER_NOT_FOUND } = require("../../consts/authErrors");
 const { StatusCodes } = require("../../consts/codes");
 const { UnauthorizedError, NotFoundError } = require("../../utils/errors");
+const logger = require("../../utils/logger");
 
 class UserController {
   constructor(userService) {
@@ -31,6 +32,7 @@ class UserController {
 
       res.status(StatusCodes.CREATED).json({ user, token });
     } catch (error) {
+      next(error);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error.errors);
     }
   };
@@ -44,15 +46,13 @@ class UserController {
     };
 
     try {
-      const user = await this.userService.findOne({ where: loginDto });
+      const { user, token } = await this.userService.login(loginDto);
 
-      if (!user) {
+      if (!(user && token)) {
         return res
           .status(StatusCodes.NOT_FOUND)
           .json(new NotFoundError(USER_NOT_FOUND));
       }
-
-      const token = this.userService.createUserToken(user);
 
       return res.status(StatusCodes.OK).json({ user, token });
     } catch (error) {
