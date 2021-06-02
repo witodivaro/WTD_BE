@@ -1,8 +1,4 @@
-const {
-  NotFoundError,
-  InternalServerError,
-  UnauthorizedError,
-} = require("../../utils/errors");
+const { NotFoundError, UnauthorizedError } = require("../../utils/errors");
 const { StatusCodes } = require("../../consts/codes");
 const { UNAUTHORIZED } = require("../../consts/authErrors");
 const { TASK_DOESNT_EXIST } = require("../../consts/taskErrors");
@@ -46,9 +42,7 @@ class TaskController {
 
       res.status(StatusCodes.CREATED).json(this.taskService.toResponse(task));
     } catch (error) {
-      res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json(new InternalServerError(error.message));
+      next(error);
     }
   };
 
@@ -60,9 +54,7 @@ class TaskController {
 
       res.status(StatusCodes.OK).json(this.taskService.toResponse(updatedTask));
     } catch (error) {
-      res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .send(new InternalServerError(error.message));
+      next(error);
     }
   };
 
@@ -80,9 +72,7 @@ class TaskController {
 
       res.status(StatusCodes.OK).json(task);
     } catch (error) {
-      res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .send(new InternalServerError(error.message));
+      next(error);
     }
   };
 
@@ -101,9 +91,7 @@ class TaskController {
 
       res.status(StatusCodes.OK).json(this.taskService.toResponse(task));
     } catch (error) {
-      res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .send(new InternalServerError(error.message));
+      next(error);
     }
   };
 }

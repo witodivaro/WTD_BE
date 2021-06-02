@@ -12,6 +12,7 @@ const pageNotFoundController = require("./controllers/404");
 const Task = require("./modules/task/task.model");
 const User = require("./modules/user/user.model");
 const { authMiddleware } = require("./middlewares/auth.middleware");
+const { errorMiddleware } = require("./middlewares/error.middleware");
 
 Task.belongsTo(User);
 User.hasMany(Task, { onDelete: "CASCADE" });
@@ -32,6 +33,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/tasks", tasksRoutes);
 app.use("/user", userRoutes);
 app.use(pageNotFoundController.get404);
+
+app.use(errorMiddleware);
 
 app.listen(3002);
 
