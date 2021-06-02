@@ -1,10 +1,10 @@
-const { db_user, db_port, db_name, db_password } = process.env;
+const { DB_USER, DB_PORT, DB_NAME, DB_PASSWORD } = process.env;
 
 const DB_CONFIG = {
-  username: db_user,
-  password: db_password,
-  port: db_port,
-  database: db_name,
+  username: DB_USER,
+  password: DB_PASSWORD,
+  port: DB_PORT,
+  database: DB_NAME,
   dialect: "postgres",
 };
 
