@@ -7,6 +7,7 @@
 - Auth: jsonwebtoken (JWT)
 - Config: dotenv
 - Security: CORS, bcrypt
+- Utility: nodemailer, winston
 
 ## Sequelize Documentation
 
