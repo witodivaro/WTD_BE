@@ -8,6 +8,6 @@ exports.generateHash = async (pw) => {
   return await bcrypt.hash(pw, salt);
 };
 
-exports.comparePasswordAndHash = async (pw, hash) => {
+exports.verifyPassword = async (pw, hash) => {
   return await bcrypt.compare(pw, hash);
 };

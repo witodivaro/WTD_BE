@@ -1,20 +1,33 @@
-const jwt = require("jsonwebtoken");
+const passport = require("passport");
+const JwtStrategy = require("passport-jwt").Strategy;
+const ExtractJwt = require("passport-jwt").ExtractJwt;
 
 const { JWT_SECRET_KEY } = require("../config");
 const User = require("../modules/user/user.model");
+const logger = require("../utils/logger");
 
-exports.authMiddleware = async (req, _, next) => {
-  const authHeader = req.headers.authorization;
-
-  const token = authHeader?.split(" ")[1];
-
-  if (token) {
-    const { id } = jwt.verify(token, JWT_SECRET_KEY);
-
-    req.user = await User.findByPk(id);
-  } else {
-    req.user = null;
-  }
-
-  next();
+const options = {
+  secretOrKey: JWT_SECRET_KEY,
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
 };
+
+passport.use(
+  new JwtStrategy(options, async (jwtPayload, done) => {
+    try {
+      const user = await User.findByPk(jwtPayload.id);
+
+      if (user) {
+        return done(null, user);
+      }
+
+      done(null, false);
+    } catch (error) {
+      done(error, false);
+    }
+  })
+);
+
+passport.serializeUser((user, done) => done(null, user));
+passport.deserializeUser((user, done) => done(null, user));
+
+module.exports = passport;
