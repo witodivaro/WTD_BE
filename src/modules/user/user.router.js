@@ -1,17 +1,24 @@
 const express = require("express");
-
 const router = express.Router();
+
+const passport = require("../../middlewares/auth.middleware");
 
 const UserRepository = require("./user.repository");
 const UserService = require("./user.service");
 const UserController = require("./user.controller");
 const User = require("./user.model");
+const EmailService = require("../email/email.service");
 
 const userRepository = new UserRepository(User);
 const userService = new UserService(userRepository);
-const userController = new UserController(userService);
+const emailService = new EmailService();
+const userController = new UserController(userService, emailService);
 
-router.get("/", userController.getUser);
+router.post(
+  "/check-token",
+  passport.authenticate("jwt"),
+  userController.checkToken
+);
 
 router.post("/sign-up", userController.signUp);
 

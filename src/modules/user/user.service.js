@@ -1,10 +1,7 @@
 const jwt = require("jsonwebtoken");
 
 const { JWT_SECRET_KEY } = require("../../config");
-const {
-  generateHash,
-  comparePasswordAndHash,
-} = require("../../utils/encryption");
+const { generateHash, verifyPassword } = require("../../utils/encryption");
 
 class UserService {
   constructor(userRepository) {
@@ -51,10 +48,7 @@ class UserService {
     const user = await this.findOne(options);
 
     if (user) {
-      const passwordMatches = await comparePasswordAndHash(
-        password,
-        user.password
-      );
+      const passwordMatches = await verifyPassword(password, user.password);
 
       if (passwordMatches) {
         token = this.createUserToken(user);
