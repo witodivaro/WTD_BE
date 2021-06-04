@@ -9,6 +9,7 @@ class TaskController {
   }
 
   getTasks = async (req, res, next) => {
+    console.log(req.cookies);
     if (!req.user) {
       return res
         .status(StatusCodes.UNAUTHORIZED)

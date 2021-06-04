@@ -1,20 +1,15 @@
-const { UNAUTHORIZED, USER_NOT_FOUND } = require("../../consts/authErrors");
+const { USER_NOT_FOUND } = require("../../consts/authErrors");
 const { StatusCodes } = require("../../consts/codes");
-const { UnauthorizedError, NotFoundError } = require("../../utils/errors");
+const { NotFoundError } = require("../../utils/errors");
 
 class UserController {
-  constructor(userService) {
+  constructor(userService, emailService) {
     this.userService = userService;
+    this.emailService = emailService;
   }
 
-  getUser = async (req, res, next) => {
-    if (!req.user) {
-      return res
-        .status(StatusCodes.UNAUTHORIZED)
-        .json(new UnauthorizedError(UNAUTHORIZED));
-    }
-
-    return res.status(StatusCodes.OK).json(req.user);
+  checkToken = async (req, res, next) => {
+    res.status(StatusCodes.OK).send();
   };
 
   signUp = async (req, res, next) => {
@@ -28,6 +23,7 @@ class UserController {
       };
 
       const { user, token } = await this.userService.createUser(userDto);
+      this.emailService.sendVerificationEmail(email);
 
       res.status(StatusCodes.CREATED).json({ user, token });
     } catch (error) {

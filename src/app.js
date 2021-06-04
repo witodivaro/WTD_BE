@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 
 const sequelize = require("./db/index");
 const tasksRoutes = require("./modules/task/task.router");
@@ -20,6 +21,7 @@ const app = express();
 app.use(
   cors({
     origin: "http://localhost:3001",
+    credentials: true,
   })
 );
 
@@ -27,6 +29,7 @@ app.use(passport.initialize());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 app.use(
   "/tasks",
