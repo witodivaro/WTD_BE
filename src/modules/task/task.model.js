@@ -32,6 +32,11 @@ const Task = sequelize.define("task", {
     type: Sequelize.DATE,
     allowNull: true,
   },
+  userId: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    onDelete: "CASCADE",
+  },
 });
 
 module.exports = Task;
