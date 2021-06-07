@@ -1,4 +1,8 @@
-const { Op } = require("sequelize");
+const sequelize = require("sequelize");
+
+const User = require("../user/user.model");
+
+const { Op } = sequelize;
 
 const MILISECONDS_IN_ONE_DAY = 24 * 60 * 60 * 1000;
 const ONE_DAY_AGO = Date.now() - MILISECONDS_IN_ONE_DAY * 1;
@@ -60,6 +64,26 @@ class TaskService {
     };
 
     return await this.taskRepository.update(id, updatedTask);
+  }
+
+  async getTopTaskCreators() {
+    const options = {
+      attributes: [
+        [sequelize.fn("COUNT", sequelize.col("userId")), "tasksCount"],
+      ],
+      include: [
+        {
+          model: User,
+          required: true,
+          attributes: ["id", "username"],
+        },
+      ],
+      group: ["userId", "user.id"],
+      order: [[sequelize.col("tasksCount"), "DESC"]],
+      limit: 10,
+    };
+
+    return await this.taskRepository.findAll(options);
   }
 }
 

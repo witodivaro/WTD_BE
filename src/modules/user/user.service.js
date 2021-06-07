@@ -8,6 +8,12 @@ class UserService {
     this.userRepository = userRepository;
   }
 
+  toResponse(user) {
+    const { username, email, role } = user;
+
+    return { username, email, role };
+  }
+
   createUser = async (userDto) => {
     const { password } = userDto;
 

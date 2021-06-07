@@ -25,7 +25,9 @@ class UserController {
       const { user, token } = await this.userService.createUser(userDto);
       this.emailService.sendVerificationEmail(email);
 
-      res.status(StatusCodes.CREATED).json({ user, token });
+      res
+        .status(StatusCodes.CREATED)
+        .json({ user: this.userService.toResponse(user), token });
     } catch (error) {
       next(error);
     }
@@ -48,7 +50,9 @@ class UserController {
           .json(new NotFoundError(USER_NOT_FOUND));
       }
 
-      return res.status(StatusCodes.OK).json({ user, token });
+      return res
+        .status(StatusCodes.OK)
+        .json({ user: this.userService.toResponse(user), token });
     } catch (error) {
       next(error);
     }

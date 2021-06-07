@@ -21,4 +21,6 @@ router.patch("/archived/:id", taskController.changeTaskArchived);
 
 router.delete("/:id", taskController.deleteTask);
 
+router.get("/top", taskController.getTopTaskCreators);
+
 module.exports = router;
