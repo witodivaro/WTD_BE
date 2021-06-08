@@ -1,6 +1,7 @@
 const nodemailer = require("nodemailer");
 
 const { EMAIL_CONFIG } = require("../../config");
+const { generateEmailVerificationTemplate } = require("../../utils/email");
 
 class EmailService {
   constructor() {
@@ -17,11 +18,12 @@ class EmailService {
     this.mailer = nodemailer.createTransport(options);
   }
 
-  sendVerificationEmail = async (to) => {
+  sendVerificationEmail = async (to, username, verificationCode) => {
     this.sendEmail({
       to,
       subject: "Email Verification",
       text: "Please, verificate your email",
+      html: generateEmailVerificationTemplate(username, verificationCode),
     });
   };
 

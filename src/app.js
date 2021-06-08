@@ -31,11 +31,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.use(
-  "/tasks",
-  passport.authenticate("jwt", { session: false }),
-  tasksRoutes
-);
+app.use("/tasks", tasksRoutes);
 app.use("/user", userRoutes);
 app.use(pageNotFoundController.get404);
 

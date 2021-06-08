@@ -1,5 +1,6 @@
 const { USER_NOT_FOUND } = require("../../consts/authErrors");
 const { StatusCodes } = require("../../consts/codes");
+
 const { NotFoundError } = require("../../utils/errors");
 
 class UserController {
@@ -22,8 +23,14 @@ class UserController {
         password,
       };
 
-      const { user, token } = await this.userService.createUser(userDto);
-      this.emailService.sendVerificationEmail(email);
+      const { user, token, emailVerificationHash } =
+        await this.userService.createUser(userDto);
+
+      this.emailService.sendVerificationEmail(
+        email,
+        username,
+        emailVerificationHash
+      );
 
       res
         .status(StatusCodes.CREATED)
@@ -58,9 +65,17 @@ class UserController {
     }
   };
 
-  updateUser = async (req, res, next) => {};
+  verificateEmail = async (req, res, next) => {
+    const { verificationHash } = req.body;
 
-  deleteUser = async (req, res, next) => {};
+    try {
+      await this.userService.verificateEmail(verificationHash);
+
+      res.status(200).send();
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 module.exports = UserController;
