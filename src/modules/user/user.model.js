@@ -26,6 +26,16 @@ const User = sequelize.define("user", {
   role: {
     type: Sequelize.TEXT,
     allowNull: true,
+    defaultValue: "user",
+  },
+  emailVerificationHash: {
+    type: Sequelize.TEXT,
+    allowNull: true,
+  },
+  emailVerificated: {
+    type: Sequelize.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
   },
 });
 

@@ -9,7 +9,6 @@ class TaskController {
   }
 
   getTasks = async (req, res, next) => {
-    console.log(req.cookies);
     if (!req.user) {
       return res
         .status(StatusCodes.UNAUTHORIZED)
@@ -72,6 +71,16 @@ class TaskController {
       const task = await this.taskService.deleteTask(id);
 
       res.status(StatusCodes.OK).json(task);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getTopTaskCreators = async (req, res, next) => {
+    try {
+      const top = await this.taskService.getTopTaskCreators();
+
+      res.status(200).send(top);
     } catch (error) {
       next(error);
     }

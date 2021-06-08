@@ -1,5 +1,6 @@
 const { USER_NOT_FOUND } = require("../../consts/authErrors");
 const { StatusCodes } = require("../../consts/codes");
+
 const { NotFoundError } = require("../../utils/errors");
 
 class UserController {
@@ -22,10 +23,18 @@ class UserController {
         password,
       };
 
-      const { user, token } = await this.userService.createUser(userDto);
-      this.emailService.sendVerificationEmail(email);
+      const { user, token, emailVerificationHash } =
+        await this.userService.createUser(userDto);
 
-      res.status(StatusCodes.CREATED).json({ user, token });
+      this.emailService.sendVerificationEmail(
+        email,
+        username,
+        emailVerificationHash
+      );
+
+      res
+        .status(StatusCodes.CREATED)
+        .json({ user: this.userService.toResponse(user), token });
     } catch (error) {
       next(error);
     }
@@ -48,15 +57,25 @@ class UserController {
           .json(new NotFoundError(USER_NOT_FOUND));
       }
 
-      return res.status(StatusCodes.OK).json({ user, token });
+      return res
+        .status(StatusCodes.OK)
+        .json({ user: this.userService.toResponse(user), token });
     } catch (error) {
       next(error);
     }
   };
 
-  updateUser = async (req, res, next) => {};
+  verificateEmail = async (req, res, next) => {
+    const { verificationHash } = req.body;
 
-  deleteUser = async (req, res, next) => {};
+    try {
+      await this.userService.verificateEmail(verificationHash);
+
+      res.status(200).send();
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 module.exports = UserController;

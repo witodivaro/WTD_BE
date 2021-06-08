@@ -7,8 +7,8 @@ exports.errorMiddleware = function (error, req, res, next) {
     return next(error);
   }
 
-  res.status(StatusCodes.INTERNAL_SERVER_ERROR);
+  res.status(error.status || StatusCodes.INTERNAL_SERVER_ERROR);
   res.json(new InternalServerError(error.errors || error.message));
 
-  logger.error(error);
+  logger.error(JSON.stringify(error, null, 2));
 };

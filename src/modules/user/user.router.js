@@ -24,8 +24,6 @@ router.post("/sign-up", userController.signUp);
 
 router.post("/login", userController.login);
 
-router.patch("/:id", userController.updateUser);
-
-router.delete("/:id", userController.deleteUser);
+router.post("/verificate-email", userController.verificateEmail);
 
 module.exports = router;
