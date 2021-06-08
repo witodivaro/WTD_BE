@@ -4,7 +4,6 @@ const ExtractJwt = require("passport-jwt").ExtractJwt;
 
 const { JWT_SECRET_KEY } = require("../config");
 const User = require("../modules/user/user.model");
-const logger = require("../utils/logger");
 
 const options = {
   secretOrKey: JWT_SECRET_KEY,

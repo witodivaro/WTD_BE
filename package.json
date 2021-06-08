@@ -17,6 +17,7 @@
     "passport-jwt": "^4.0.0",
     "pg": "^8.6.0",
     "sequelize": "^6.6.2",
+    "socket.io": "^4.1.2",
     "winston": "^3.3.3"
   },
   "devDependencies": {

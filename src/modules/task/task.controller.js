@@ -2,10 +2,12 @@ const { NotFoundError, UnauthorizedError } = require("../../utils/errors");
 const { StatusCodes } = require("../../consts/codes");
 const { UNAUTHORIZED } = require("../../consts/authErrors");
 const { TASK_DOESNT_EXIST } = require("../../consts/taskErrors");
+const { SocketEvents } = require("./task.sockets");
 
 class TaskController {
-  constructor(taskService) {
+  constructor(taskService, taskSockets) {
     this.taskService = taskService;
+    this.taskSockets = taskSockets;
   }
 
   getTasks = async (req, res, next) => {
@@ -41,6 +43,8 @@ class TaskController {
       const task = await this.taskService.createTask(taskDto, req.user);
 
       res.status(StatusCodes.CREATED).json(this.taskService.toResponse(task));
+
+      this.taskSockets.sendTopTaskCreators(req.io);
     } catch (error) {
       next(error);
     }
@@ -71,6 +75,8 @@ class TaskController {
       const task = await this.taskService.deleteTask(id);
 
       res.status(StatusCodes.OK).json(task);
+
+      this.taskSockets.sendTopTaskCreators(req.io);
     } catch (error) {
       next(error);
     }
@@ -80,7 +86,7 @@ class TaskController {
     try {
       const top = await this.taskService.getTopTaskCreators();
 
-      res.status(200).send(top);
+      res.status(200).json(top);
     } catch (error) {
       next(error);
     }
