@@ -1,7 +1,9 @@
+const { validationResult } = require("express-validator");
+
 const { USER_NOT_FOUND } = require("../../consts/authErrors");
 const { StatusCodes } = require("../../consts/codes");
 
-const { NotFoundError } = require("../../utils/errors");
+const { NotFoundError, ValidationError } = require("../../utils/errors");
 
 class UserController {
   constructor(userService, emailService) {
@@ -14,7 +16,13 @@ class UserController {
   };
 
   signUp = async (req, res, next) => {
+    const errors = validationResult(req);
+
     try {
+      if (!errors.isEmpty()) {
+        throw new ValidationError(errors.array());
+      }
+
       const { email, username, password } = req.body;
 
       const userDto = {
