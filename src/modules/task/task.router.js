@@ -6,12 +6,14 @@ const TaskRepository = require("./task.repository");
 const TaskService = require("./task.service");
 const TaskController = require("./task.controller");
 const Task = require("./task.model");
+const { TaskSockets } = require("./task.sockets");
 
 const passport = require("../../middlewares/auth.middleware");
 
 const taskRepository = new TaskRepository(Task);
 const taskService = new TaskService(taskRepository);
-const taskController = new TaskController(taskService);
+const taskSockets = new TaskSockets(taskService);
+const taskController = new TaskController(taskService, taskSockets);
 
 router.get(
   "/",
