@@ -1,5 +1,5 @@
-const express = require("express");
-const router = express.Router();
+const router = require("express").Router();
+const { body, validationResult } = require("express-validator");
 
 const passport = require("../../middlewares/auth.middleware");
 
@@ -20,7 +20,13 @@ router.post(
   userController.checkToken
 );
 
-router.post("/sign-up", userController.signUp);
+router.post(
+  "/sign-up",
+  body("email").isEmail(),
+  body("password").isLength({ min: 8 }),
+  body("username").isLength({ min: 3, max: 20 }),
+  userController.signUp
+);
 
 router.post("/login", userController.login);
 

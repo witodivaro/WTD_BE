@@ -2,23 +2,22 @@ const { StatusCodes } = require("../consts/codes");
 const { createTimestamp } = require("./utils");
 
 class Error {
-  constructor(message) {
-    this.message = message;
+  constructor() {
     this.timestamp = createTimestamp();
   }
 }
 
 class ValidationError extends Error {
-  constructor(message, errors) {
-    super(message);
+  constructor(errors) {
+    super();
     this.status = StatusCodes.BAD_REQUEST;
-    this.error = errors;
+    this.errors = errors;
   }
 }
 
 class InternalServerError extends Error {
-  constructor(message, error) {
-    super(message);
+  constructor(error) {
+    super();
     this.error = error;
   }
 }
