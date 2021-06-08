@@ -1,6 +1,6 @@
-const { ROUTE_NOT_FOUND } = require("../consts/serverErrors");
-const { StatusCodes } = require("../consts/codes");
-const { NotFoundError } = require("../utils/errors");
+const { ROUTE_NOT_FOUND } = require("../../consts/serverErrors");
+const { StatusCodes } = require("../../consts/codes");
+const { NotFoundError } = require("../../utils/errors");
 
 class NotFoundController {
   get404(req, res, next) {
