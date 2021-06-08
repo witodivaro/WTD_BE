@@ -4,9 +4,9 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 
 const sequelize = require("./db/index");
-const tasksRoutes = require("./modules/task/task.router");
-const userRoutes = require("./modules/user/user.router");
-const pageNotFoundController = require("./controllers/404");
+const tasksRouter = require("./modules/task/task.router");
+const userRouter = require("./modules/user/user.router");
+const notFoundRouter = require("./modules/notFound/notFound.router");
 
 const Task = require("./modules/task/task.model");
 const User = require("./modules/user/user.model");
@@ -31,9 +31,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.use("/tasks", tasksRoutes);
-app.use("/user", userRoutes);
-app.use(pageNotFoundController.get404);
+app.use("/tasks", tasksRouter);
+app.use("/user", userRouter);
+app.use(notFoundRouter);
 
 app.use(errorMiddleware);
 
