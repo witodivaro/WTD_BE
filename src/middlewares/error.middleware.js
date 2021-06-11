@@ -1,5 +1,4 @@
 const { StatusCodes } = require("../consts/codes");
-const { InternalServerError } = require("../utils/errors");
 const logger = require("../utils/logger");
 
 exports.errorMiddleware = function (error, req, res, next) {
@@ -8,7 +7,7 @@ exports.errorMiddleware = function (error, req, res, next) {
   }
 
   res.status(error.status || StatusCodes.INTERNAL_SERVER_ERROR);
-  res.json(new InternalServerError(error.errors || error.message));
+  res.json(error);
 
   logger.error(JSON.stringify(error, null, 2));
 };

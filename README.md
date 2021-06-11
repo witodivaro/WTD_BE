@@ -1,4 +1,4 @@
-### Wito's To-Dos Backend
+### Wito Divaro's Task Manager
 
 ## Stack technologies
 

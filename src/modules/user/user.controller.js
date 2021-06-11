@@ -1,14 +1,14 @@
 const { validationResult } = require("express-validator");
 
-const { USER_NOT_FOUND } = require("../../consts/authErrors");
 const { StatusCodes } = require("../../consts/codes");
 
-const { NotFoundError, ValidationError } = require("../../utils/errors");
+const { ValidationError, ValidationException } = require("../../utils/errors");
 
 class UserController {
-  constructor(userService, emailService) {
+  constructor(userService, emailService, jwtService) {
     this.userService = userService;
     this.emailService = emailService;
+    this.jwtService = jwtService;
   }
 
   checkToken = async (req, res, next) => {
@@ -20,7 +20,11 @@ class UserController {
 
     try {
       if (!errors.isEmpty()) {
-        throw new ValidationError(errors.array());
+        throw new ValidationException(
+          errors
+            .array()
+            .map(({ param, msg }) => new ValidationError(msg, param))
+        );
       }
 
       const { email, username, password } = req.body;
@@ -31,18 +35,23 @@ class UserController {
         password,
       };
 
-      const { user, token, emailVerificationHash } =
-        await this.userService.createUser(userDto);
+      const user = await this.userService.createUser(userDto);
 
-      this.emailService.sendVerificationEmail(
-        email,
-        username,
-        emailVerificationHash
-      );
+      // this.emailService.sendVerificationEmail(
+      //   email,
+      //   username,
+      //   user.emailVerificationHash
+      // );
+
+      const { accessToken, refreshToken } = this.jwtService.createPairOfTokens({
+        id: user.id,
+      });
+
+      this.jwtService.setTokensInCookies(res, accessToken, refreshToken);
 
       res
         .status(StatusCodes.CREATED)
-        .json({ user: this.userService.toResponse(user), token });
+        .json({ user: this.userService.toResponse(user) });
     } catch (error) {
       next(error);
     }
@@ -57,20 +66,36 @@ class UserController {
     };
 
     try {
-      const { user, token } = await this.userService.login(loginDto);
+      const user = await this.userService.login(loginDto);
 
-      if (!(user && token)) {
-        return res
-          .status(StatusCodes.NOT_FOUND)
-          .json(new NotFoundError(USER_NOT_FOUND));
-      }
+      const { accessToken, refreshToken } = this.jwtService.createPairOfTokens({
+        id: user.id,
+      });
+
+      this.jwtService.setTokensInCookies(res, accessToken, refreshToken);
 
       return res
         .status(StatusCodes.OK)
-        .json({ user: this.userService.toResponse(user), token });
+        .json({ user: this.userService.toResponse(user) });
     } catch (error) {
       next(error);
     }
+  };
+
+  refreshTokens = async (req, res, next) => {
+    const { id } = req.jwtPayload;
+
+    const { accessToken, refreshToken } = this.jwtService.createPairOfTokens({
+      id,
+    });
+
+    this.jwtService.setTokensInCookies(res, accessToken, refreshToken);
+
+    res.status(StatusCodes.OK).send();
+  };
+
+  logout = async (req, res, next) => {
+    res.status(200).send();
   };
 
   verificateEmail = async (req, res, next) => {

@@ -1,16 +1,24 @@
-const jwt = require("jsonwebtoken");
-
-const { JWT_SECRET_KEY } = require("../../config");
 const { EMAIL_CONFIG } = require("../../config");
-const { USER_NOT_FOUND } = require("../../consts/authErrors");
+const {
+  USER_NOT_FOUND,
+  UNIQUE_EMAIL,
+  UNIQUE_USERNAME,
+  WRONG_CREDENTIALS,
+} = require("../../consts/authErrors");
 
 const { generateHash, verifyPassword } = require("../../utils/encryption");
+const {
+  ValidationException,
+  ValidationError,
+  HttpException,
+} = require("../../utils/errors");
 
 const { EMAIL_VERIFICATION_SECRET_KEY } = EMAIL_CONFIG;
 
 class UserService {
-  constructor(userRepository) {
+  constructor(userRepository, jwtService) {
     this.userRepository = userRepository;
+    this.jwtService = jwtService;
   }
 
   toResponse(user) {
@@ -21,6 +29,24 @@ class UserService {
 
   createUser = async (userDto) => {
     const { email, username, password } = userDto;
+
+    let existingUser = null;
+
+    existingUser = await this.findOne({ where: { email } });
+
+    if (existingUser) {
+      throw new ValidationException([
+        new ValidationError(UNIQUE_EMAIL, "email"),
+      ]);
+    }
+
+    existingUser = await this.findOne({ where: { username } });
+
+    if (existingUser) {
+      throw new ValidationException([
+        new ValidationError(UNIQUE_USERNAME, "username"),
+      ]);
+    }
 
     const hashedPassword = await generateHash(password);
     let emailVerificationHash = await generateHash(
@@ -35,19 +61,11 @@ class UserService {
       emailVerificationHash,
     });
 
-    const token = this.createUserToken(user);
-
-    return { user, token, emailVerificationHash };
-  };
-
-  createUserToken = (user) => {
-    return jwt.sign({ role: "user", id: user.id }, JWT_SECRET_KEY);
+    return user;
   };
 
   login = async (loginDto) => {
     const { username, password } = loginDto;
-
-    let token = null;
 
     const options = {
       where: {
@@ -57,15 +75,17 @@ class UserService {
 
     const user = await this.findOne(options);
 
-    if (user) {
-      const passwordMatches = await verifyPassword(password, user.password);
-
-      if (passwordMatches) {
-        token = this.createUserToken(user);
-      }
+    if (!user) {
+      throw new HttpException(400, WRONG_CREDENTIALS);
     }
 
-    return { user, token };
+    const passwordMatches = await verifyPassword(password, user.password);
+
+    if (!passwordMatches) {
+      throw new HttpException(400, WRONG_CREDENTIALS);
+    }
+
+    return user;
   };
 
   verificateEmail = async (verificationHash) => {

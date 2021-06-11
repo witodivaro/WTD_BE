@@ -15,7 +15,6 @@ const User = require("./modules/user/user.model");
 
 const { errorMiddleware } = require("./middlewares/error.middleware");
 const { createSocketMiddleware } = require("./middlewares/socket.middleware");
-const passport = require("./middlewares/auth.middleware");
 
 const setupSockets = require("./utils/sockets");
 
@@ -37,10 +36,9 @@ app.use(createSocketMiddleware(io));
 app.use(
   cors({
     origin: "http://localhost:3000",
+    credentials: true,
   })
 );
-
-app.use(passport.initialize());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
