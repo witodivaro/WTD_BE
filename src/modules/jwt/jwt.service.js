@@ -19,7 +19,7 @@ class JWTService {
 
   createPairOfTokens(payload) {
     const accessToken = jwt.sign(payload, JWT_SECRET_KEY, {
-      expiresIn: 1,
+      expiresIn: ACCESS_TOKEN_EXPIRATION_TIME,
     });
 
     const refreshToken = jwt.sign(payload, JWT_SECRET_KEY, {

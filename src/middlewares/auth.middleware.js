@@ -4,7 +4,6 @@ const { JWT_SECRET_KEY } = require("../config");
 const User = require("../modules/user/user.model");
 const { HttpException } = require("../utils/errors");
 const { UNAUTHORIZED, FORBIDDEN } = require("../consts/authErrors");
-const { JWTService } = require("../modules/jwt");
 
 const extractJwtFromCookie = (req, tokenKey) => {
   let token = null;
