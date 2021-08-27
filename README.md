@@ -4,7 +4,7 @@
 
 - JavaScript, Node.js, express.js, Sequelize
 - DB: PostgreSQL
-- Auth: passport.js, jsonwebtoken (JWT)
+- Auth: jsonwebtoken (JWT)
 - Config: dotenv
 - Security: CORS, bcrypt
 - Utility: nodemailer, winston, express-validator

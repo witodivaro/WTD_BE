@@ -6,6 +6,7 @@ exports.errorMiddleware = function (error, req, res, next) {
     return next(error);
   }
 
+  console.log(error);
   res.status(error.status || StatusCodes.INTERNAL_SERVER_ERROR);
   res.json(error);
 

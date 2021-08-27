@@ -1,12 +1,13 @@
 const { validationResult } = require("express-validator");
 
 const { StatusCodes } = require("../../consts/codes");
+const { createCsrfToken } = require("../../utils/encryption");
 
 const { ValidationError, ValidationException } = require("../../utils/errors");
 
-class UserController {
-  constructor(userService, emailService, jwtService) {
-    this.userService = userService;
+class AuthController {
+  constructor(authService, emailService, jwtService) {
+    this.authService = authService;
     this.emailService = emailService;
     this.jwtService = jwtService;
   }
@@ -35,7 +36,7 @@ class UserController {
         password,
       };
 
-      const user = await this.userService.createUser(userDto);
+      const user = await this.authService.createUser(userDto);
 
       // this.emailService.sendVerificationEmail(
       //   email,
@@ -49,9 +50,12 @@ class UserController {
 
       this.jwtService.setTokensInCookies(res, accessToken, refreshToken);
 
+      const csrfToken = createCsrfToken(accessToken);
+      res.cookies('_csrf', csrfToken);
+
       res
         .status(StatusCodes.CREATED)
-        .json({ user: this.userService.toResponse(user) });
+        .json({ user: this.authService.toResponse(user) });
     } catch (error) {
       next(error);
     }
@@ -66,17 +70,19 @@ class UserController {
     };
 
     try {
-      const user = await this.userService.login(loginDto);
+      const user = await this.authService.login(loginDto);
 
       const { accessToken, refreshToken } = this.jwtService.createPairOfTokens({
         id: user.id,
       });
 
       this.jwtService.setTokensInCookies(res, accessToken, refreshToken);
+      const csrfToken = createCsrfToken(accessToken);
+      res.cookies('_csrf', csrfToken)
 
       return res
         .status(StatusCodes.OK)
-        .json({ user: this.userService.toResponse(user) });
+        .json({ user: this.authService.userToResponse(user) });
     } catch (error) {
       next(error);
     }
@@ -102,7 +108,7 @@ class UserController {
     const { verificationHash } = req.body;
 
     try {
-      await this.userService.verificateEmail(verificationHash);
+      await this.authService.verificateEmail(verificationHash);
 
       res.status(200).send();
     } catch (error) {
@@ -111,4 +117,4 @@ class UserController {
   };
 }
 
-module.exports = UserController;
+module.exports = AuthController;

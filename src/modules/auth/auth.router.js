@@ -6,7 +6,7 @@ const {
   verifyRefreshToken,
 } = require("../../middlewares/auth.middleware");
 
-const { UserService, UserController, UserRepository } = require("./");
+const { AuthController, AuthService, UserRepository } = require(".");
 const { JWTRepository, JWTService } = require("../jwt");
 const EmailService = require("../email/email.service");
 
@@ -19,28 +19,28 @@ const {
 const jwtRepository = new JWTRepository();
 const jwtService = new JWTService(jwtRepository);
 const userRepository = new UserRepository();
-const userService = new UserService(userRepository);
+const authService = new AuthService(userRepository);
 const emailService = new EmailService();
-const userController = new UserController(
-  userService,
+const authController = new AuthController(
+  authService,
   emailService,
   jwtService
 );
 
-router.post("/check-access-token", authenticate, userController.checkToken);
+router.post("/check-access-token", authenticate, authController.checkToken);
 
 router.post(
   "/sign-up",
   // body("email").isEmail().withMessage(WRONG_EMAIL),
   // body("password").isLength({ min: 8 }).withMessage(PASSWORD_MIN_LENGTH),
   // body("username").isLength({ min: 3, max: 20 }).withMessage(USERNAME_LIMITS),
-  userController.signUp
+  authController.signUp
 );
 
-router.post("/login", userController.login);
+router.post("/login", authController.login);
 
-router.post("/verificate-email", userController.verificateEmail);
+router.post("/verificate-email", authController.verificateEmail);
 
-router.post("/refresh-token", verifyRefreshToken, userController.refreshTokens);
+router.post("/refresh-token", verifyRefreshToken, authController.refreshTokens);
 
 module.exports = router;

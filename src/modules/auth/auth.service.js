@@ -1,3 +1,5 @@
+const { Op } = require("sequelize");
+
 const { EMAIL_CONFIG } = require("../../config");
 const {
   USER_NOT_FOUND,
@@ -15,13 +17,13 @@ const {
 
 const { EMAIL_VERIFICATION_SECRET_KEY } = EMAIL_CONFIG;
 
-class UserService {
+class AuthService {
   constructor(userRepository, jwtService) {
     this.userRepository = userRepository;
     this.jwtService = jwtService;
   }
 
-  toResponse(user) {
+  userToResponse(user) {
     const { username, email, role } = user;
 
     return { username, email, role };
@@ -32,20 +34,26 @@ class UserService {
 
     let existingUser = null;
 
-    existingUser = await this.findOne({ where: { email } });
+    existingUser = await this.findOne({
+      where: {
+        [Op.or]: [{ email }, { username }],
+      },
+    });
 
     if (existingUser) {
-      throw new ValidationException([
-        new ValidationError(UNIQUE_EMAIL, "email"),
-      ]);
-    }
+      const { email: emailInUse, username: usernameInUse } = existingUser;
 
-    existingUser = await this.findOne({ where: { username } });
-
-    if (existingUser) {
-      throw new ValidationException([
-        new ValidationError(UNIQUE_USERNAME, "username"),
-      ]);
+      if (emailInUse === email) {
+        throw new ValidationException([
+          new ValidationError(UNIQUE_EMAIL, "email"),
+        ]);
+      }
+      
+      if (usernameInUse === username) {
+        throw new ValidationException([
+          new ValidationError(UNIQUE_USERNAME, "username"),
+        ]);
+      }
     }
 
     const hashedPassword = await generateHash(password);
@@ -98,7 +106,7 @@ class UserService {
     const user = await this.findOne(options);
 
     if (!user) {
-      throw new Error(USER_NOT_FOUND);
+      throw new HttpException(401, USER_NOT_FOUND);
     }
 
     user.emailVerificated = true;
@@ -113,4 +121,4 @@ class UserService {
   };
 }
 
-module.exports = UserService;
+module.exports = AuthService;

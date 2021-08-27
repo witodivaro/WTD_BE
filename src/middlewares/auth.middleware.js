@@ -22,12 +22,13 @@ module.exports = {
       const payload = jwt.verify(accessToken, JWT_SECRET_KEY);
 
       const user = await User.findByPk(payload.id);
-
+      console.log(user);
       if (!user) {
         next(new HttpException(403, FORBIDDEN));
       }
 
       req.user = user;
+      req.jwt = jwt;
 
       next();
     } catch (err) {
