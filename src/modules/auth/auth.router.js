@@ -2,8 +2,8 @@ const router = require("express").Router();
 const { body } = require("express-validator");
 
 const {
-  authenticate,
   verifyRefreshToken,
+  verifyAccessToken,
 } = require("../../middlewares/auth.middleware");
 
 const { AuthController, AuthService, UserRepository } = require(".");
@@ -26,7 +26,11 @@ const authController = new AuthController(
   securityService
 );
 
-router.post("/check-access-token", authenticate, authController.checkToken);
+router.post(
+  "/check-access-token",
+  verifyAccessToken,
+  authController.checkToken
+);
 
 router.post(
   "/sign-up",
