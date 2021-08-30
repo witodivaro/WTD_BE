@@ -48,9 +48,7 @@ app.use(cookieParser());
 
 app.use("/user", userRouter);
 
-// Authenticate before setting CSRF protection, so it has access to the JWT token.
-app.use(authenticate)
-
+app.use(authenticate);
 app.use(csrfWall);
 
 app.use("/tasks", tasksRouter);

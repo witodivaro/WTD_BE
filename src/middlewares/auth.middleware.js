@@ -23,7 +23,9 @@ module.exports = {
         next(new HttpException(403, FORBIDDEN));
       }
 
-      req.user = user;
+      if (!req.user) {
+        req.user = user;
+      }
 
       next();
     } catch (err) {
