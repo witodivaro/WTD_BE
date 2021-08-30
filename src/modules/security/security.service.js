@@ -16,7 +16,7 @@ class SecurityService {
 
   async createSecurityTokens(payload) {
     const accessToken = jwt.sign(payload, JWT_SECRET_KEY, {
-      expiresIn: 2,
+      expiresIn: ACCESS_TOKEN_EXPIRATION_TIME,
     });
 
     const refreshToken = jwt.sign(payload, JWT_SECRET_KEY, {
@@ -44,7 +44,7 @@ class SecurityService {
 
     res.cookie("_csrf", csrfToken, {
       httpOnly: false,
-      expiresIn: REFRESH_TOKEN_EXPIRATION_TIME,
+      expiresIn: ACCESS_TOKEN_EXPIRATION_TIME,
       sameSite: "LAX",
     });
   }

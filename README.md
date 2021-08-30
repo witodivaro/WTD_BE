@@ -6,7 +6,7 @@
 - DB: PostgreSQL
 - Auth: jsonwebtoken (JWT)
 - Config: dotenv
-- Security: CORS, bcrypt
+- Security: CSRF Token, CORS, bcrypt, Helmet
 - Utility: nodemailer, winston, express-validator
 
 ## Sequelize Documentation

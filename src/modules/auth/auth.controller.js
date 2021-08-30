@@ -1,7 +1,6 @@
 const { validationResult } = require("express-validator");
 
 const { StatusCodes } = require("../../consts/codes");
-const { createCsrfToken } = require("../../utils/encryption");
 
 const { ValidationError, ValidationException } = require("../../utils/errors");
 

@@ -36,6 +36,21 @@ module.exports = {
       next(new HttpException(403, FORBIDDEN));
     }
   },
+  verifyAccessToken: async (req, res, next) => {
+    try {
+      const accessToken = extractCookie(req, "accessToken");
+
+      verifyJwtToken(accessToken);
+
+      return next();
+    } catch (err) {
+      if (err instanceof jwt.TokenExpiredError) {
+        return next(new HttpException(401, UNAUTHORIZED));
+      }
+
+      next(new HttpException(403, FORBIDDEN));
+    }
+  },
   verifyRefreshToken: async (req, res, next) => {
     try {
       const refreshToken = extractCookie(req, "refreshToken");
