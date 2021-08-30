@@ -7,7 +7,7 @@ const { Server } = require("socket.io");
 
 const sequelize = require("./db/index");
 const tasksRouter = require("./modules/task/task.router");
-const userRouter = require("./modules/user/user.router");
+const userRouter = require("./modules/auth/auth.router");
 const notFoundRouter = require("./modules/notFound/notFound.router");
 
 const Task = require("./modules/task/task.model");
@@ -15,7 +15,8 @@ const User = require("./modules/user/user.model");
 
 const { errorMiddleware } = require("./middlewares/error.middleware");
 const { createSocketMiddleware } = require("./middlewares/socket.middleware");
-const passport = require("./middlewares/auth.middleware");
+const { csrfWall } = require("./middlewares/csrf.middleware");
+const { authenticate } = require("./middlewares/auth.middleware");
 
 const setupSockets = require("./utils/sockets");
 
@@ -37,17 +38,20 @@ app.use(createSocketMiddleware(io));
 app.use(
   cors({
     origin: "http://localhost:3000",
+    credentials: true,
   })
 );
-
-app.use(passport.initialize());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.use("/tasks", tasksRouter);
 app.use("/user", userRouter);
+
+app.use(authenticate);
+app.use(csrfWall);
+
+app.use("/tasks", tasksRouter);
 app.use(notFoundRouter);
 
 app.use(errorMiddleware);

@@ -1,10 +1,9 @@
 const { ROUTE_NOT_FOUND } = require("../../consts/serverErrors");
-const { StatusCodes } = require("../../consts/codes");
-const { NotFoundError } = require("../../utils/errors");
+const { HttpException } = require("../../utils/errors");
 
 class NotFoundController {
   get404(req, res, next) {
-    res.status(StatusCodes.NOT_FOUND).send(new NotFoundError(ROUTE_NOT_FOUND));
+    next(new HttpException(404, ROUTE_NOT_FOUND));
   }
 }
 

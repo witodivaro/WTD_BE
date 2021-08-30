@@ -1,10 +1,10 @@
-### Wito's To-Dos Backend
+### Wito Divaro's Task Manager
 
 ## Stack technologies
 
 - JavaScript, Node.js, express.js, Sequelize
 - DB: PostgreSQL
-- Auth: passport.js, jsonwebtoken (JWT)
+- Auth: jsonwebtoken (JWT)
 - Config: dotenv
 - Security: CORS, bcrypt
 - Utility: nodemailer, winston, express-validator

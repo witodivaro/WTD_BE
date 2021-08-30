@@ -1,8 +1,5 @@
-const { NotFoundError, UnauthorizedError } = require("../../utils/errors");
 const { StatusCodes } = require("../../consts/codes");
-const { UNAUTHORIZED } = require("../../consts/authErrors");
 const { TASK_DOESNT_EXIST } = require("../../consts/taskErrors");
-const { SocketEvents } = require("./task.sockets");
 
 class TaskController {
   constructor(taskService, taskSockets) {
@@ -11,12 +8,6 @@ class TaskController {
   }
 
   getTasks = async (req, res, next) => {
-    if (!req.user) {
-      return res
-        .status(StatusCodes.UNAUTHORIZED)
-        .json(new UnauthorizedError(UNAUTHORIZED));
-    }
-
     await this.taskService.destroyExpiredTasks();
     const tasks = await this.taskService.getTasks(req.user);
 
@@ -24,12 +15,6 @@ class TaskController {
   };
 
   createTask = async (req, res, next) => {
-    if (!req.user) {
-      return res
-        .status(StatusCodes.UNAUTHORIZED)
-        .json(new UnauthorizedError(UNAUTHORIZED));
-    }
-
     const { type, text, color, dueDate } = req.body;
 
     const taskDto = {

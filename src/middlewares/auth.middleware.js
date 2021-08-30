@@ -1,32 +1,56 @@
-const passport = require("passport");
-const JwtStrategy = require("passport-jwt").Strategy;
-const ExtractJwt = require("passport-jwt").ExtractJwt;
+const jwt = require("jsonwebtoken");
 
-const { JWT_SECRET_KEY } = require("../config");
 const User = require("../modules/user/user.model");
 
-const options = {
-  secretOrKey: JWT_SECRET_KEY,
-  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-};
+const { JWT_SECRET_KEY } = require("../config");
 
-passport.use(
-  new JwtStrategy(options, async (jwtPayload, done) => {
+const { UNAUTHORIZED, FORBIDDEN } = require("../consts/authErrors");
+
+const { HttpException } = require("../utils/errors");
+const { extractCookie } = require("../utils/utils");
+const { verifyJwtToken } = require("../utils/auth");
+
+module.exports = {
+  authenticate: async (req, res, next) => {
     try {
-      const user = await User.findByPk(jwtPayload.id);
+      const accessToken = extractCookie(req, "accessToken");
 
-      if (user) {
-        return done(null, user);
+      const payload = verifyJwtToken(accessToken);
+
+      const user = await User.findByPk(payload.id);
+
+      if (!user) {
+        next(new HttpException(403, FORBIDDEN));
       }
 
-      done(null, false);
-    } catch (error) {
-      done(error, false);
+      if (!req.user) {
+        req.user = user;
+      }
+
+      next();
+    } catch (err) {
+      if (err instanceof jwt.TokenExpiredError) {
+        return next(new HttpException(401, UNAUTHORIZED));
+      }
+
+      next(new HttpException(403, FORBIDDEN));
     }
-  })
-);
+  },
+  verifyRefreshToken: async (req, res, next) => {
+    try {
+      const refreshToken = extractCookie(req, "refreshToken");
 
-passport.serializeUser((user, done) => done(null, user));
-passport.deserializeUser((user, done) => done(null, user));
+      const payload = verifyJwtToken(refreshToken);
 
-module.exports = passport;
+      req.jwtPayload = payload;
+
+      next();
+    } catch (err) {
+      res.clearCookie("accessToken");
+      res.clearCookie("refreshToken");
+      res.clearCookie("_csrf");
+
+      next(new HttpException(403, FORBIDDEN));
+    }
+  },
+};
