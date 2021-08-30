@@ -48,6 +48,7 @@ module.exports = {
     } catch (err) {
       res.clearCookie("accessToken");
       res.clearCookie("refreshToken");
+      res.clearCookie("_csrf");
 
       next(new HttpException(403, FORBIDDEN));
     }
