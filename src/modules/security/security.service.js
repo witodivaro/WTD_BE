@@ -37,14 +37,14 @@ class SecurityService {
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      expiresIn: REFRESH_TOKEN_EXPIRATION_TIME,
+      maxAge: REFRESH_TOKEN_EXPIRATION_TIME,
       path: "/user/refresh-token",
       sameSite: "LAX",
     });
 
     res.cookie("_csrf", csrfToken, {
       httpOnly: false,
-      expiresIn: ACCESS_TOKEN_EXPIRATION_TIME,
+      maxAge: ACCESS_TOKEN_EXPIRATION_TIME,
       sameSite: "LAX",
     });
   }
