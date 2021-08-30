@@ -44,7 +44,7 @@ class SecurityService {
 
     res.cookie("_csrf", csrfToken, {
       httpOnly: false,
-      expiresIn: REFRESH_TOKEN_EXPIRATION_TIME,
+      expiresIn: ACCESS_TOKEN_EXPIRATION_TIME,
       sameSite: "LAX",
     });
   }
