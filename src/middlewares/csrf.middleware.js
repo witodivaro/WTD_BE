@@ -1,20 +1,21 @@
 const { HttpException } = require("../utils/errors");
-const { verifyCsrfToken } = require("../utils/encryption");
+const { verifyCsrfToken } = require("../utils/auth");
+const { extractCookie } = require("../utils/utils");
 
 module.exports = {
   csrfWall: (req, res, next) => {
-    const { jwt } = req;
-    const csrfToken = req.headers["X-CSRF-TOKEN"];
+    const csrfToken = req.headers["x-csrf-token"];
+    const accessToken = extractCookie(req, "accessToken");
 
     if (!csrfToken) {
       return next(new HttpException(403, "CSRF Token is not set"));
     }
 
-    if (!jwt) {
-      return next(new Error("JWT Token is not defined on CSRF validation"));
+    if (!accessToken) {
+      return next(new HttpException(403, "Access token is not set"));
     }
 
-    const isPassingCsrf = verifyCsrfToken(csrfToken, jwt);
+    const isPassingCsrf = verifyCsrfToken(csrfToken, accessToken);
 
     if (!isPassingCsrf) {
       return next(new HttpException(403, "CSRF Token is not valid"));

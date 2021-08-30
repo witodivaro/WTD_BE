@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 
 const { JWT_SECRET_KEY } = require("../../config");
+const { createCsrfToken } = require("../../utils/auth");
 
 const ONE_MINUTE_IN_MS = 1000 * 60;
 const ONE_DAY = ONE_MINUTE_IN_MS * 60 * 24;
@@ -8,28 +9,26 @@ const ONE_DAY = ONE_MINUTE_IN_MS * 60 * 24;
 const ACCESS_TOKEN_EXPIRATION_TIME = ONE_MINUTE_IN_MS * 5;
 const REFRESH_TOKEN_EXPIRATION_TIME = ONE_DAY;
 
-class JWTService {
+class SecurityService {
   constructor(jwtRepository) {
     this.jwtRepository = jwtRepository;
   }
 
-  findBlacklistedToken(token) {
-    return this.jwtRepository.findOne({ where: { token } });
-  }
-
-  createPairOfTokens(payload) {
+  async createSecurityTokens(payload) {
     const accessToken = jwt.sign(payload, JWT_SECRET_KEY, {
-      expiresIn: ACCESS_TOKEN_EXPIRATION_TIME,
+      expiresIn: 2,
     });
 
     const refreshToken = jwt.sign(payload, JWT_SECRET_KEY, {
       expiresIn: REFRESH_TOKEN_EXPIRATION_TIME,
     });
 
-    return { accessToken, refreshToken };
+    const csrfToken = await createCsrfToken(accessToken);
+
+    return { accessToken, refreshToken, csrfToken };
   }
 
-  setTokensInCookies(res, accessToken, refreshToken) {
+  setTokensInCookies(res, accessToken, refreshToken, csrfToken) {
     res.cookie("accessToken", accessToken, {
       maxAge: ACCESS_TOKEN_EXPIRATION_TIME,
       httpOnly: true,
@@ -42,7 +41,13 @@ class JWTService {
       path: "/user/refresh-token",
       sameSite: "LAX",
     });
+
+    res.cookie("_csrf", csrfToken, {
+      httpOnly: false,
+      expiresIn: REFRESH_TOKEN_EXPIRATION_TIME,
+      sameSite: "LAX",
+    });
   }
 }
 
-module.exports = JWTService;
+module.exports = SecurityService;

@@ -1,30 +1,46 @@
-const bcrypt = require("bcrypt");
-const md5 = require("md5");
 const aes = require('crypto-js/aes');
-const { CSRF_SECRET_KEY } = require("../config/auth");
+const CryptoJS = require('crypto-js');
 
-const saltRounds = 10;
+const keySize = 256;
+const ivSize = 128;
+const iterations = 100;
 
-exports.generateHash = async (line) => {
-  const salt = await bcrypt.genSalt(saltRounds);
+exports.encrypt = (text, secretKey) => {
+  const salt = CryptoJS.lib.WordArray.random(128 / 8);
 
-  return await bcrypt.hash(line, salt);
+  const key = CryptoJS.PBKDF2(secretKey, salt, {
+    keySize: keySize / 32,
+    iterations,
+  });
+
+  const iv = CryptoJS.lib.WordArray.random(ivSize / 8);
+
+  const encrypted = aes.encrypt(text, key, {
+    iv,
+    padding: CryptoJS.pad.Pkcs7,
+    mode: CryptoJS.mode.CBC,
+  });
+
+  return salt.toString() + iv.toString() + encrypted.toString();
 };
 
-exports.verifyPassword = async (pw, hash) => {
-  return await bcrypt.compare(pw, hash);
-};
+exports.decrypt = (transitMessage, secretKey) => {
+  const salt = CryptoJS.enc.Hex.parse(transitMessage.substr(0, 32));
+  const iv = CryptoJS.enc.Hex.parse(transitMessage.substr(32, 32));
+  const encrypted = transitMessage.substring(64);
 
-exports.createCsrfToken = async (jwtToken) => {
-  const hashedJwtToken = md5(jwtToken);
-  
-  const csrfToken = aes.encrypt(hashedJwtToken, CSRF_SECRET_KEY);
-  return csrfToken;
-};
+  const key = CryptoJS.PBKDF2(secretKey, salt, {
+    keySize: keySize / 32,
+    iterations,
+  });
 
-exports.verifyCsrfToken = (csrfToken, jwtToken) => {
-  const decryptedCsrfToken = aes.decrypt(csrfToken, CSRF_SECRET_KEY);
-  const hashedJwtToken = md5(jwtToken);
-  
-  return hashedJwtToken === decryptedCsrfToken;
+  const decrypted = aes
+    .decrypt(encrypted, key, {
+      iv,
+      padding: CryptoJS.pad.Pkcs7,
+      mode: CryptoJS.mode.CBC,
+    })
+    .toString(CryptoJS.enc.Utf8);
+
+  return decrypted;
 };

@@ -1,34 +1,29 @@
 const jwt = require("jsonwebtoken");
 
-const { JWT_SECRET_KEY } = require("../config");
 const User = require("../modules/user/user.model");
-const { HttpException } = require("../utils/errors");
+
+const { JWT_SECRET_KEY } = require("../config");
+
 const { UNAUTHORIZED, FORBIDDEN } = require("../consts/authErrors");
 
-const extractJwtFromCookie = (req, tokenKey) => {
-  let token = null;
-
-  if (req && req.cookies) token = req.cookies[tokenKey];
-
-  return token;
-};
+const { HttpException } = require("../utils/errors");
+const { extractCookie } = require("../utils/utils");
+const { verifyJwtToken } = require("../utils/auth");
 
 module.exports = {
-  extractJwtFromCookie,
   authenticate: async (req, res, next) => {
     try {
-      const accessToken = extractJwtFromCookie(req, "accessToken");
+      const accessToken = extractCookie(req, "accessToken");
 
-      const payload = jwt.verify(accessToken, JWT_SECRET_KEY);
+      const payload = verifyJwtToken(accessToken);
 
       const user = await User.findByPk(payload.id);
-      console.log(user);
+
       if (!user) {
         next(new HttpException(403, FORBIDDEN));
       }
 
       req.user = user;
-      req.jwt = jwt;
 
       next();
     } catch (err) {
@@ -41,9 +36,9 @@ module.exports = {
   },
   verifyRefreshToken: async (req, res, next) => {
     try {
-      const refreshToken = extractJwtFromCookie(req, "refreshToken");
+      const refreshToken = extractCookie(req, "refreshToken");
 
-      const payload = jwt.verify(refreshToken, JWT_SECRET_KEY);
+      const payload = verifyJwtToken(refreshToken);
 
       req.jwtPayload = payload;
 

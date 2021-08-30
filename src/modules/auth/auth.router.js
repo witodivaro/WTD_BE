@@ -7,7 +7,7 @@ const {
 } = require("../../middlewares/auth.middleware");
 
 const { AuthController, AuthService, UserRepository } = require(".");
-const { JWTRepository, JWTService } = require("../jwt");
+const { SecurityService } = require("../security");
 const EmailService = require("../email/email.service");
 
 const {
@@ -16,15 +16,14 @@ const {
   WRONG_EMAIL,
 } = require("../../consts/authErrors");
 
-const jwtRepository = new JWTRepository();
-const jwtService = new JWTService(jwtRepository);
+const securityService = new SecurityService();
 const userRepository = new UserRepository();
 const authService = new AuthService(userRepository);
 const emailService = new EmailService();
 const authController = new AuthController(
   authService,
   emailService,
-  jwtService
+  securityService
 );
 
 router.post("/check-access-token", authenticate, authController.checkToken);

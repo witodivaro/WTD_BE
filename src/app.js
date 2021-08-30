@@ -15,9 +15,10 @@ const User = require("./modules/user/user.model");
 
 const { errorMiddleware } = require("./middlewares/error.middleware");
 const { createSocketMiddleware } = require("./middlewares/socket.middleware");
+const { csrfWall } = require("./middlewares/csrf.middleware");
+const { authenticate } = require("./middlewares/auth.middleware");
 
 const setupSockets = require("./utils/sockets");
-const { csrfWall } = require("./middlewares/csrf.middleware");
 
 Task.belongsTo(User);
 User.hasMany(Task, { onDelete: "CASCADE" });
@@ -46,6 +47,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use("/user", userRouter);
+
+// Authenticate before setting CSRF protection, so it has access to the JWT token.
+app.use(authenticate)
 
 app.use(csrfWall);
 

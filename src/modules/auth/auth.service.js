@@ -8,12 +8,13 @@ const {
   WRONG_CREDENTIALS,
 } = require("../../consts/authErrors");
 
-const { generateHash, verifyPassword } = require("../../utils/encryption");
+const { verifyPassword } = require("../../utils/auth");
 const {
   ValidationException,
   ValidationError,
   HttpException,
 } = require("../../utils/errors");
+const { generateStrongHash } = require("../../utils/hashing");
 
 const { EMAIL_VERIFICATION_SECRET_KEY } = EMAIL_CONFIG;
 
@@ -56,8 +57,8 @@ class AuthService {
       }
     }
 
-    const hashedPassword = await generateHash(password);
-    let emailVerificationHash = await generateHash(
+    const hashedPassword = await generateStrongHash(password);
+    let emailVerificationHash = await generateStrongHash(
       EMAIL_VERIFICATION_SECRET_KEY + email + username
     );
 

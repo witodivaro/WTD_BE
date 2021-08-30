@@ -6,10 +6,10 @@ const { createCsrfToken } = require("../../utils/encryption");
 const { ValidationError, ValidationException } = require("../../utils/errors");
 
 class AuthController {
-  constructor(authService, emailService, jwtService) {
+  constructor(authService, emailService, securityService) {
     this.authService = authService;
     this.emailService = emailService;
-    this.jwtService = jwtService;
+    this.securityService = securityService;
   }
 
   checkToken = async (req, res, next) => {
@@ -44,18 +44,15 @@ class AuthController {
       //   user.emailVerificationHash
       // );
 
-      const { accessToken, refreshToken } = this.jwtService.createPairOfTokens({
+      const { accessToken, refreshToken, csrfToken } = await this.securityService.createSecurityTokens({
         id: user.id,
       });
 
-      this.jwtService.setTokensInCookies(res, accessToken, refreshToken);
-
-      const csrfToken = createCsrfToken(accessToken);
-      res.cookies('_csrf', csrfToken);
+      this.securityService.setTokensInCookies(res, accessToken, refreshToken, csrfToken);
 
       res
         .status(StatusCodes.CREATED)
-        .json({ user: this.authService.toResponse(user) });
+        .json({ user: this.authService.userToResponse(user) });
     } catch (error) {
       next(error);
     }
@@ -72,13 +69,11 @@ class AuthController {
     try {
       const user = await this.authService.login(loginDto);
 
-      const { accessToken, refreshToken } = this.jwtService.createPairOfTokens({
+      const { accessToken, refreshToken, csrfToken } = await this.securityService.createSecurityTokens({
         id: user.id,
       });
 
-      this.jwtService.setTokensInCookies(res, accessToken, refreshToken);
-      const csrfToken = createCsrfToken(accessToken);
-      res.cookies('_csrf', csrfToken)
+      this.securityService.setTokensInCookies(res, accessToken, refreshToken, csrfToken);
 
       return res
         .status(StatusCodes.OK)
@@ -91,11 +86,11 @@ class AuthController {
   refreshTokens = async (req, res, next) => {
     const { id } = req.jwtPayload;
 
-    const { accessToken, refreshToken } = this.jwtService.createPairOfTokens({
+    const { accessToken, refreshToken, csrfToken } = await this.securityService.createSecurityTokens({
       id,
     });
 
-    this.jwtService.setTokensInCookies(res, accessToken, refreshToken);
+    this.securityService.setTokensInCookies(res, accessToken, refreshToken, csrfToken);
 
     res.status(StatusCodes.OK).send();
   };
