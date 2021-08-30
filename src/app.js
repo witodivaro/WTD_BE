@@ -4,6 +4,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const { Server } = require("socket.io");
+const helmet = require('helmet');
 
 const sequelize = require("./db/index");
 const tasksRouter = require("./modules/task/task.router");
@@ -42,6 +43,7 @@ app.use(
   })
 );
 
+app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
