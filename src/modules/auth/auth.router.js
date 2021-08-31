@@ -15,6 +15,7 @@ const {
   PASSWORD_MIN_LENGTH,
   WRONG_EMAIL,
 } = require("../../consts/authErrors");
+const { csrfWall } = require("../../middlewares/csrf.middleware");
 
 const securityService = new SecurityService();
 const userRepository = new UserRepository();
@@ -44,6 +45,11 @@ router.post("/login", authController.login);
 
 router.post("/verificate-email", authController.verificateEmail);
 
-router.post("/refresh-token", verifyRefreshToken, authController.refreshTokens);
+router.post(
+  "/refresh-token",
+  csrfWall,
+  verifyRefreshToken,
+  authController.refreshTokens
+);
 
 module.exports = router;
