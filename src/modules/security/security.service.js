@@ -17,7 +17,7 @@ class SecurityService {
 
   async createSecurityTokens(payload) {
     const accessToken = jwt.sign(payload, JWT_SECRET_KEY, {
-      expiresIn: 2,
+      expiresIn: ACCESS_TOKEN_EXPIRATION_TIME,
     });
 
     const refreshToken = jwt.sign(payload, JWT_SECRET_KEY, {
