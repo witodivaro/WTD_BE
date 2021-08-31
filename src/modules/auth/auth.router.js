@@ -5,6 +5,7 @@ const {
   verifyRefreshToken,
   verifyAccessToken,
 } = require("../../middlewares/auth.middleware");
+const { csrfWall } = require("../../middlewares/csrf.middleware");
 
 const { AuthController, AuthService, UserRepository } = require(".");
 const { SecurityService } = require("../security");
@@ -44,6 +45,11 @@ router.post("/login", authController.login);
 
 router.post("/verificate-email", authController.verificateEmail);
 
-router.post("/refresh-token", verifyRefreshToken, authController.refreshTokens);
+router.post(
+  "/refresh-token",
+  csrfWall,
+  verifyRefreshToken,
+  authController.refreshTokens
+);
 
 module.exports = router;

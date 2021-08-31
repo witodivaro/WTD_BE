@@ -8,7 +8,7 @@ const helmet = require('helmet');
 
 const sequelize = require("./db/index");
 const tasksRouter = require("./modules/task/task.router");
-const userRouter = require("./modules/auth/auth.router");
+const authRouter = require("./modules/auth/auth.router");
 const notFoundRouter = require("./modules/notFound/notFound.router");
 
 const Task = require("./modules/task/task.model");
@@ -48,7 +48,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.use("/user", userRouter);
+app.use("/auth", authRouter);
 
 app.use(authenticate);
 app.use(csrfWall);

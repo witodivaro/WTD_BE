@@ -8,7 +8,7 @@ const { UNAUTHORIZED, FORBIDDEN } = require("../consts/authErrors");
 
 const { HttpException } = require("../utils/errors");
 const { extractCookie } = require("../utils/utils");
-const { verifyJwtToken } = require("../utils/auth");
+const { verifyJwtToken, verifyCsrfToken } = require("../utils/auth");
 
 module.exports = {
   authenticate: async (req, res, next) => {
@@ -44,11 +44,7 @@ module.exports = {
 
       return next();
     } catch (err) {
-      if (err instanceof jwt.TokenExpiredError) {
-        return next(new HttpException(401, UNAUTHORIZED));
-      }
-
-      next(new HttpException(403, FORBIDDEN));
+      return next(new HttpException(401, UNAUTHORIZED));
     }
   },
   verifyRefreshToken: async (req, res, next) => {
