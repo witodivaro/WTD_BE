@@ -5,6 +5,7 @@ const {
   verifyRefreshToken,
   verifyAccessToken,
 } = require("../../middlewares/auth.middleware");
+const { csrfWall } = require("../../middlewares/csrf.middleware");
 
 const { AuthController, AuthService, UserRepository } = require(".");
 const { SecurityService } = require("../security");
@@ -15,7 +16,6 @@ const {
   PASSWORD_MIN_LENGTH,
   WRONG_EMAIL,
 } = require("../../consts/authErrors");
-const { csrfWall } = require("../../middlewares/csrf.middleware");
 
 const securityService = new SecurityService();
 const userRepository = new UserRepository();
