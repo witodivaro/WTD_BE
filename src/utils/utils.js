@@ -7,3 +7,11 @@ exports.extractCookie = (req, cookieName) => {
 
   return token;
 };
+
+exports.parseCookieString = (cookieString) => {
+  return cookieString.split(";").reduce((acc, cookieSet) => {
+    const [key, value] = cookieSet.replace(/ /g, "").split("=");
+    acc[key] = value;
+    return acc;
+  }, {});
+};

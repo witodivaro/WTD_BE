@@ -2,13 +2,12 @@ const jwt = require("jsonwebtoken");
 
 const User = require("../modules/user/user.model");
 
-const { JWT_SECRET_KEY } = require("../config");
 
 const { UNAUTHORIZED, FORBIDDEN } = require("../consts/authErrors");
 
 const { HttpException } = require("../utils/errors");
 const { extractCookie } = require("../utils/utils");
-const { verifyJwtToken, verifyCsrfToken } = require("../utils/auth");
+const { verifyJwtToken } = require("../utils/auth");
 
 module.exports = {
   authenticate: async (req, res, next) => {

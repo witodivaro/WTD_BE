@@ -14,15 +14,15 @@ const taskService = new TaskService(taskRepository);
 const taskSockets = new TaskSockets(taskService);
 const taskController = new TaskController(taskService, taskSockets);
 
-router.get("/", authenticate, taskController.getTasks);
+router.get("/", taskController.getTasks);
 
-router.post("/", authenticate, taskController.createTask);
+router.post("/", taskController.createTask);
 
-router.patch("/:id", authenticate, taskController.updateTask);
+router.patch("/:id", taskController.updateTask);
 
-router.patch("/archived/:id", authenticate, taskController.changeTaskArchived);
+router.patch("/archived/:id", taskController.changeTaskArchived);
 
-router.delete("/:id", authenticate, taskController.deleteTask);
+router.delete("/:id", taskController.deleteTask);
 
 router.get("/top", taskController.getTopTaskCreators);
 
